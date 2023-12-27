@@ -1,43 +1,43 @@
-# Задаємо терм-документну матрицю
+# Р—Р°РґР°С”РјРѕ С‚РµСЂРј-РґРѕРєСѓРјРµРЅС‚РЅСѓ РјР°С‚СЂРёС†СЋ
 mat <- matrix(c(1, 1, 1, 0, 1, 1, 1, 0, 0, 0,
                 1, 0, 1, 0, 0, 1, 0, 1, 1, 1,
                 1, 1, 1, 1, 1, 0, 1, 0, 2, 0,
                 0, 1, 1), ncol = 3, byrow = TRUE)
 
-# Виконання сингулярного розкладу (SVD)
+# Р’РёРєРѕРЅР°РЅРЅСЏ СЃРёРЅРіСѓР»СЏСЂРЅРѕРіРѕ СЂРѕР·РєР»Р°РґСѓ (SVD)
 svd_result <- svd(mat)
 
-# Матриці U, S та V
+# РњР°С‚СЂРёС†С– U, S С‚Р° V
 U <- svd_result$u
 Sigma <- diag(svd_result$d)
 V <- svd_result$v
 
-# Вибір кількості тем (значення k)
+# Р’РёР±С–СЂ РєС–Р»СЊРєРѕСЃС‚С– С‚РµРј (Р·РЅР°С‡РµРЅРЅСЏ k)
 num_topics <- 2
 
-# Отримання усічених матриць U, S та V
+# РћС‚СЂРёРјР°РЅРЅСЏ СѓСЃС–С‡РµРЅРёС… РјР°С‚СЂРёС†СЊ U, S С‚Р° V
 U_reduced <- U[, 1:num_topics]
 Sigma_reduced <- Sigma[1:num_topics, 1:num_topics]
 V_reduced <- V[, 1:num_topics]
 
-# Відновлення усіченої матриці LSA
+# Р’С–РґРЅРѕРІР»РµРЅРЅСЏ СѓСЃС–С‡РµРЅРѕС— РјР°С‚СЂРёС†С– LSA
 lsa_result <- U_reduced %*% Sigma_reduced %*% t(V_reduced)
 
-# Виведення результатів
-print("Терм-документна матриця:")
+# Р’РёРІРµРґРµРЅРЅСЏ СЂРµР·СѓР»СЊС‚Р°С‚С–РІ
+print("РўРµСЂРј-РґРѕРєСѓРјРµРЅС‚РЅР° РјР°С‚СЂРёС†СЏ:")
 print(mat)
-print("Матриця LSA:")
+print("РњР°С‚СЂРёС†СЏ LSA:")
 print(lsa_result)
 
-# Обираємо два слова (рядки у матриці)
+# РћР±РёСЂР°С”РјРѕ РґРІР° СЃР»РѕРІР° (СЂСЏРґРєРё Сѓ РјР°С‚СЂРёС†С–)
 doc1 <- lsa_result[1, ]
 doc2 <- lsa_result[5, ]
 
-# Розрахунок косинусної подібності
+# Р РѕР·СЂР°С…СѓРЅРѕРє РєРѕСЃРёРЅСѓСЃРЅРѕС— РїРѕРґС–Р±РЅРѕСЃС‚С–
 cosine_similarity <- sum(doc1 * doc2) / (sqrt(sum(doc1^2)) * sqrt(sum(doc2^2)))
-print(paste("Косинус подібності:", cosine_similarity))
+print(paste("ГЉГ®Г±ГЁГ­ГіГ± ГЇГ®Г¤ВіГЎГ­Г®Г±ГІВі:", cosine_similarity))
 
-# Розрахунок косинусів подібності для кожної пари векторів у матриці LSA
+# Р РѕР·СЂР°С…СѓРЅРѕРє РєРѕСЃРёРЅСѓСЃС–РІ РїРѕРґС–Р±РЅРѕСЃС‚С– РґР»СЏ РєРѕР¶РЅРѕС— РїР°СЂРё РІРµРєС‚РѕСЂС–РІ Сѓ РјР°С‚СЂРёС†С– LSA
 cosine_similarity_matrix <- matrix(0, nrow = nrow(lsa_result), ncol = nrow(lsa_result))
 
 for (i in 1:nrow(lsa_result)) {
@@ -49,13 +49,13 @@ for (i in 1:nrow(lsa_result)) {
   }
 }
 
-# Виведення матриці косинусної подібності
+# Р’РёРІРµРґРµРЅРЅСЏ РјР°С‚СЂРёС†С– РєРѕСЃРёРЅСѓСЃРЅРѕС— РїРѕРґС–Р±РЅРѕСЃС‚С–
 print(cosine_similarity_matrix)
 
 rownames(cosine_similarity_matrix) <- c("a", "arrived", "damaged", "delivery", "fire", "gold", "in", "of", "shipment", "silver", "truck")
 colnames(cosine_similarity_matrix) <- c("a", "arrived", "damaged", "delivery", "fire", "gold", "in", "of", "shipment", "silver", "truck")
 
-# Теплокарта косинусів подібності
+# РўРµРїР»РѕРєР°СЂС‚Р° РєРѕСЃРёРЅСѓСЃС–РІ РїРѕРґС–Р±РЅРѕСЃС‚С–
 
 library(viridisLite)
 ggplot(data = reshape2::melt(cosine_similarity_matrix),
@@ -64,6 +64,6 @@ ggplot(data = reshape2::melt(cosine_similarity_matrix),
   geom_text(aes(label = round(value, 2)), vjust = 1) +
   scale_fill_viridis_c(option = "F", limits = c(-1, 1)) +
   theme_minimal() +
-  labs(title = "Теплокарта косинусів подібності",
+  labs(title = "РўРµРїР»РѕРєР°СЂС‚Р° РєРѕСЃРёРЅСѓСЃС–РІ РїРѕРґС–Р±РЅРѕСЃС‚С–",
        x = " ",
        y = " ")
